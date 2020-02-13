@@ -98,12 +98,16 @@ void USART_Init (USART_TypeDef * USARTx) {
 }
 
 
+// Changed to non-blocking function that returns 0 if there is
+// no character present.
 uint8_t USART_Read (USART_TypeDef * USARTx) {
 	// SR_RXNE (Read data register not empty) bit is set by hardware
-	while (!(USARTx->ISR & USART_ISR_RXNE));  // Wait until RXNE (RX not empty) bit is set
-	// USART resets the RXNE flag automatically after reading DR
-	return ((uint8_t)(USARTx->RDR & 0xFF));
-	// Reading USART_DR automatically clears the RXNE flag 
+	if (USARTx->ISR & USART_ISR_RXNE)  // Do we have a character?
+		// USART resets the RXNE flag automatically after reading DR
+		return ((uint8_t)(USARTx->RDR & 0xFF));
+		// Reading USART_DR automatically clears the RXNE flag
+	else
+		return 0 ;
 }
 
 void USART_Write(USART_TypeDef * USARTx, uint8_t *buffer, uint32_t nBytes) {
@@ -147,4 +151,3 @@ void USART_IRQHandler(USART_TypeDef * USARTx, uint8_t *buffer, uint32_t * pRx_co
 		while(1);     
 	}	
 }
-
