@@ -2,10 +2,10 @@
 #include "SysClock.h"
 #include "LED.h"
 #include "UART.h"
+#include "Control.h"
 #include "Commands.h"
 #include <string.h>
 #include <stdio.h>
-#include <ctype.h>
 
 void controlLoop(void) {
 	
@@ -18,22 +18,24 @@ void controlLoop(void) {
 	int i = 0;
 	
 	while (1) {
-		char curByte = USART_Read(USART2);
-		if (isalpha(curByte)) {
+		char curByte = USART_Read(USART2); 
+		if (curByte != '\0') {
 			if (curByte == '\r') {
-				// Run commands
+				handleInput(inputBuffer);
 				i = 0;
 				memset(inputBuffer, 0, sizeof inputBuffer);
 			}
-			else if (curByte == '\b') {
-				inputBuffer[--i] = 0x00;
+			else if (curByte == 0x08 || curByte == 0x7F) {
+				inputBuffer[--i] = '\0';
+				USART_Write(USART2, (uint8_t *) "\r", 1);
+				USART_Write(USART2, (uint8_t *) &inputBuffer, strlen(inputBuffer));
+				USART_Write(USART2, (uint8_t *) " ", 1);
 				USART_Write(USART2, (uint8_t *) "\r", 1);
 				USART_Write(USART2, (uint8_t *) &inputBuffer, strlen(inputBuffer));
 			}
 			else {
 				inputBuffer[i++] = curByte;
-				USART_Write(USART2, (uint8_t *) "\r", 1);
-				USART_Write(USART2, (uint8_t *) &inputBuffer, strlen(inputBuffer));
+				USART_Write(USART2, (uint8_t *) &curByte, 1);
 			}
 		}
 		USART_Delay(1000);
