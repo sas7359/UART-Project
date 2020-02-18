@@ -17,18 +17,30 @@ int greenFlashing = 0;
 void handleInput(char* input) {
 		if (strcmp(input, "RON") == 0) {
 			Red_LED_On();
+			if (redFlashing == 1) {
+				redFlashing = 0;
+			}
 			USART_Write(USART2, (uint8_t *) "\n\rTurning red led on.\n\r", 23);
 		}
 		else if (strcmp(input, "ROFF") == 0) {
 			Red_LED_Off();
+			if (redFlashing == 1) {
+				redFlashing = 0;
+			}
 			USART_Write(USART2, (uint8_t *) "\n\rTurning red led off.\n\r", 24);
 		}
 		else if (strcmp(input, "GON") == 0) {
 			Green_LED_On();
+			if (greenFlashing == 1) {
+				greenFlashing = 0;
+			}
 			USART_Write(USART2, (uint8_t *) "\n\rTurning green led on.\n\r", 25);
 		}
 		else if (strcmp(input, "GOFF") == 0) {
 			Green_LED_Off();
+			if (greenFlashing == 1) {
+				greenFlashing = 0;
+			}
 			USART_Write(USART2, (uint8_t *) "\n\rTurning green led off.\n\r", 26);
 		}
 		else if (strcmp(input, "RFLASH") == 0) {
