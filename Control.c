@@ -18,9 +18,10 @@ void controlLoop(void) {
 	int i = 0;
 	
 	while (1) {
-		char curByte = USART_Read(USART2); 
+		char curByte = USART_Read(USART2);
 		if (curByte != '\0') {
 			if (curByte == '\r') {
+				inputBuffer[i] = '\0';
 				handleInput(inputBuffer);
 				i = 0;
 				memset(inputBuffer, 0, sizeof inputBuffer);
