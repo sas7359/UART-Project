@@ -8,13 +8,6 @@
 #include <stdio.h>
 
 int main(void){
-	/*
-	char  rxByte;
-	int		a;
-	int		n;
-	int		i;
-	float b;
-	*/
 		
 	controlLoop();
 	

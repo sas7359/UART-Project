@@ -7,15 +7,34 @@
 #include <string.h>
 #include <stdio.h>
 
+void SysTick_Init() {
+	SysTick->LOAD = 80000; // Set reset value
+	SysTick->CTRL |= (1<<2); // Set to processor clock
+	SysTick->CTRL |= 1; // Enable
+}
+
 void controlLoop(void) {
 	
 	System_Clock_Init(); // Switch System Clock = 80 MHz
 	LED_Init();
 	UART2_Init();
+	SysTick_Init();
 	
 	int loopCounter = 0;
 	char inputBuffer[20];
 	int i = 0;
+	
+	/*
+	
+	volatile static uint8_t count_down_flag;
+	
+	SysTick_Handler(void) {
+		count_down_flag = 1;
+	}
+	
+	*/
+	
+	SysTick_Init();
 	
 	while (1) {
 		char curByte = USART_Read(USART2);
@@ -39,7 +58,9 @@ void controlLoop(void) {
 				USART_Write(USART2, (uint8_t *) &curByte, 1);
 			}
 		}
-		USART_Delay(1000);
+		while (!(SysTick->CTRL & 0x10000)) {
+			// Delay: 1ms 
+		};			
 		if (isRedFlashing() || isGreenFlashing()) {
 			loopCounter = loopCounter + 10;
 			if (loopCounter >= 1000) {
